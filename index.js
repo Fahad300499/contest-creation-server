@@ -24,6 +24,20 @@ async function run() {
         const contestDB = client.db("contestDB");
         const contestCollection = contestDB.collection("contest");
 
+        // all contest get api
+        app.get('/all-contests', async(req, res)=>{
+            const contest = req.body;
+            const cursor = contestCollection.find({}).sort({participants : -1})
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+         // all contest post api
+        app.post('/all-contests', async(req, res)=>{
+            const contest = req.body;
+            const result = await contestCollection.insertOne(contest);
+            res.send(result);
+        })
+
         // contest get api
         app.get('/contests', async(req, res)=>{
             const contest = req.body;
