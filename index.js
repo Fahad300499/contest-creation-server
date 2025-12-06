@@ -1,5 +1,5 @@
 const express = require('express')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 var cors = require('cors')
 const port = 3000
@@ -24,9 +24,26 @@ async function run() {
         const contestDB = client.db("contestDB");
         const contestCollection = contestDB.collection("contest");
 
+        // contest get api
+        app.get('/contests', async(req, res)=>{
+            const contest = req.body;
+            const cursor = contestCollection.find({}).limit(6).sort({participants : -1})
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        // contest details page api
+        app.get('/contests/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query = {_id : new ObjectId(id)}
+            const cursor = contestCollection.find(query)
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        // contest post api
         app.post('/contests', async(req, res)=>{
             const contest = req.body;
-
             const result = await contestCollection.insertOne(contest);
             res.send(result);
         })
